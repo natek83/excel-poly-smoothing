@@ -54,10 +54,12 @@ import os
 import pandas as pd
 
 table_size = 32
+x_deg = 2
+y_deg = 5
 # strength = 3
 
 fname = os.path.join("2 7 Hydra LTT Conversion (v1.1).xlsx")
-fuel = pd.read_excel(fname,sheet_name=1,index_col=0,nrows=32)
+fuel = pd.read_excel(fname,sheet_name=1,index_col=0,nrows= table_size)
 
 x_s = fuel.columns
 y_s = fuel.index
@@ -73,12 +75,12 @@ for i in range(0, table_size):
 for i in range(0, table_size):
     yi.append(int(y_s[i].replace('kPa','')))
     
-for i in range(0,32):
-    for j in range(0,32):
+for i in range(0, table_size):
+    for j in range(0, table_size):
         x.append(xi[i])
 
-for i in range(0,32):
-    for j in range(0,32):
+for i in range(0, table_size):
+    for j in range(0, table_size):
         y.append(yi[j])
 
 for i in range(0, table_size):
@@ -89,17 +91,17 @@ x = np.array(x)
 y = np.array(y)
 z = np.array(z)
 
-w = polyfit2d(x, y, z, m_1=3, m_2=2)
+w = polyfit2d(x, y, z, m_1=x_deg, m_2=y_deg)
 
 # Generate x', y', z'
-n_ = 1000
+n_ = 2048
 x_, y_ = np.meshgrid(np.linspace(x.min(), x.max(), n_),
                       np.linspace(y.min(), y.max(), n_))
 z_ = np.zeros((n_, n_))
 for i in range(n_):
-    z_[i, :] = polyval2d(x_[i, :], y_[i, :], w, m_1=3, m_2=2)
+    z_[i, :] = polyval2d(x_[i, :], y_[i, :], w, m_1=x_deg, m_2=y_deg)
 
 # Plot
-plt.imshow(z_, extent=(x_.min(), y_.max(), x_.max(), y_.min()))
+plt.imshow(z_, aspect='auto', extent=(x_.min(), x_.max(), y_.max(), y_.min()))
 plt.scatter(x, y, c=z)
 plt.show()
