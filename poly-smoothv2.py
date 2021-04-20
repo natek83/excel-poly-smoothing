@@ -16,7 +16,7 @@ def polyfit2d(x, y, f, deg):
     vander = polynomial.polyvander2d(x, y, deg)
     vander = vander.reshape((-1,vander.shape[-1]))
     f = f.reshape((vander.shape[0],))
-    c = np.linalg.lstsq(vander, f)[0]
+    c = np.linalg.lstsq(vander, f,rcond=-1)[0]
     return c.reshape(deg+1)
 
 
@@ -24,7 +24,7 @@ import os
 import pandas as pd
 
 table_size = 32
-deg = np.array([2,5])
+deg = np.array([2,6])
 # strength = 3
 
 fname = os.path.join("2 7 Hydra LTT Conversion (v1.1).xlsx")
@@ -63,7 +63,7 @@ z = np.array(z)
 w = polyfit2d(x, y, z, deg)
 
 # Generate x', y', z'
-n_ = 2048
+n_ = 32
 x_, y_ = np.meshgrid(np.linspace(x.min(), x.max(), n_),
                       np.linspace(y.min(), y.max(), n_))
 z_ = np.zeros((n_, n_))
@@ -73,4 +73,5 @@ for i in range(n_):
 # Plot
 plt.imshow(z_, aspect='auto', extent=(x_.min(), x_.max(), y_.max(), y_.min()))
 plt.scatter(x, y, c=z)
+plt.title(str(deg))
 plt.show()
